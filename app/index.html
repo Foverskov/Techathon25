@@ -136,7 +136,26 @@
       padding: 4px 12px;
       border-radius: 12px;
       box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: transform 0.2s;
     }
+    #user-points:hover {
+      transform: scale(1.05);
+    }
+
+    /* Discount Modal Styles */
+    .reward-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+    .reward-item:last-child { border-bottom: none; }
+    .reward-info { display: flex; flex-direction: column; }
+    .reward-cost { font-weight: bold; color: var(--primary); font-size: 0.9rem; }
+    .reward-btn { padding: 6px 12px; font-size: 0.85rem; background: var(--secondary); color: white; border-radius: 8px; }
+    .reward-btn:disabled { background: #ccc; cursor: not-allowed; }
 
     /* Nav */
     nav {
@@ -432,7 +451,7 @@
     <div class="header-right">
       <div id="auth-display">
         <button id="login-btn" onclick="showLogin()">Login</button>
-        <div id="user-points" style="display:none">Points: <span id="points-val">0</span></div>
+        <div id="user-points" style="display:none" onclick="showDiscounts()">Points: <span id="points-val">0</span></div>
       </div>
       <button class="menu-btn" onclick="toggleMenu()" aria-label="Menu">☰</button>
       
@@ -475,7 +494,7 @@
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-clothing')" aria-label="Upload photo">
       <img id="img-preview-clothing" class="img-preview" style="display:none;">
       <input type="text" id="item-desc-clothing" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
-      <button onclick="dropOff('clothing')">Hand-in</button>
+      <button onclick="showHandInQR('clothing')">Hand-in</button>
       <div class="listings-divider">
         <h3>Available Items</h3>
       </div>
@@ -488,7 +507,7 @@
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-home')" aria-label="Upload photo">
       <img id="img-preview-home" class="img-preview" style="display:none;">
       <input type="text" id="item-desc-home" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
-      <button onclick="dropOff('home')">Hand-in item</button>
+      <button onclick="showHandInQR('home')">Hand-in item</button>
       <div class="listings-divider">
         <h3>Available Items</h3>
       </div>
@@ -501,7 +520,7 @@
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-books')" aria-label="Upload photo">
       <img id="img-preview-books" class="img-preview" style="display:none;">
       <input type="text" id="item-desc-books" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
-      <button onclick="dropOff('books')">Hand-in item</button>
+      <button onclick="showHandInQR('books')">Hand-in item</button>
       <div class="listings-divider">
         <h3>Available Items</h3>
       </div>
@@ -514,7 +533,7 @@
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-electronics')" aria-label="Upload photo">
       <img id="img-preview-electronics" class="img-preview" style="display:none;">
       <input type="text" id="item-desc-electronics" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
-      <button onclick="dropOff('electronics')">Hand-in item</button>
+      <button onclick="showHandInQR('electronics')">Hand-in item</button>
       <div class="listings-divider">
         <h3>Available Items</h3>
       </div>
@@ -527,7 +546,7 @@
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-toys')" aria-label="Upload photo">
       <img id="img-preview-toys" class="img-preview" style="display:none;">
       <input type="text" id="item-desc-toys" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
-      <button onclick="dropOff('toys')">Hand-in item</button>
+      <button onclick="showHandInQR('toys')">Hand-in item</button>
       <div class="listings-divider">
         <h3>Available Items</h3>
       </div>
@@ -540,7 +559,7 @@
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-sports')" aria-label="Upload photo">
       <img id="img-preview-sports" class="img-preview" style="display:none;">
       <input type="text" id="item-desc-sports" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
-      <button onclick="dropOff('sports')">Hand-in item</button>
+      <button onclick="showHandInQR('sports')">Hand-in item</button>
       <div class="listings-divider">
         <h3>Available Items</h3>
       </div>
@@ -558,6 +577,49 @@
       <p id="notification-message"></p>
     </div>
   </div>
+  <!-- Discount Modal -->
+  <div id="discount-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeDiscounts()">&times;</span>
+      <h3>Community Rewards</h3>
+      <p style="color:var(--text-light); margin-bottom:20px;">Redeem your points for local perks!</p>
+      <div id="rewards-list">
+        <div class="reward-item">
+          <div class="reward-info">
+            <strong>Free Coffee at Café</strong>
+            <span class="reward-cost">50 Points</span>
+          </div>
+          <button class="reward-btn" onclick="redeemReward(50, 'Free Coffee')">Redeem</button>
+        </div>
+        <div class="reward-item">
+          <div class="reward-info">
+            <strong>24h Reservation Hold</strong>
+            <span class="reward-cost">100 Points</span>
+          </div>
+          <button class="reward-btn" onclick="redeemReward(100, 'Reservation Hold')">Redeem</button>
+        </div>
+        <div class="reward-item">
+          <div class="reward-info">
+            <strong>Repair Workshop Pass</strong>
+            <span class="reward-cost">200 Points</span>
+          </div>
+          <button class="reward-btn" onclick="redeemReward(200, 'Workshop Pass')">Redeem</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Hand-in Modal -->
+  <div id="qr-modal" class="modal" style="display:none;">
+    <div class="modal-content" style="text-align:center;">
+      <span class="close" onclick="closeQR()">&times;</span>
+      <h3>Scan to Open Bin</h3>
+      <p style="color:var(--text-light); margin-bottom:15px;">Scan this code at the station to unlock the bin.</p>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SydhavnHub-Unlock" alt="QR Code" style="margin: 10px auto 20px; display: block; border-radius: 12px; border: 1px solid #eee;">
+      <button onclick="completeDropOff()" style="width:100%; padding:14px; background:var(--primary); color:white; border-radius:12px; font-size:1rem;">I have deposited the item</button>
+    </div>
+  </div>
+
   <div id="instructions-modal" class="modal" style="display:none">
     <div class="modal-content">
       <span class="close" onclick="closeModal()">&times;</span>
@@ -635,6 +697,25 @@ function addPoints(amt) {
   document.getElementById('points-val').textContent = points;
 }
 
+function showDiscounts() {
+  document.getElementById('discount-modal').style.display = 'flex';
+}
+
+function closeDiscounts() {
+  document.getElementById('discount-modal').style.display = 'none';
+}
+
+function redeemReward(cost, name) {
+  if (points >= cost) {
+    addPoints(-cost);
+    closeDiscounts();
+    showCelebration(`Redeemed: ${name}!`);
+    scheduleNotification(`Voucher for '${name}' sent to your app.`);
+  } else {
+    alert("Not enough points!");
+  }
+}
+
 // Feature #9: Notification/reminder (simulated)
 function scheduleNotification(msg) {
   document.getElementById('notification-message').textContent = msg;
@@ -676,12 +757,34 @@ function showTab(tabId) {
   document.getElementById("alerts").textContent = "";
 }
 
-// Drop-off with photo and text storage
-function dropOff(cat) {
+// Drop-off with QR Code flow
+let pendingCategory = null;
+
+function showHandInQR(cat) {
   if (!accessGranted) {
     document.getElementById("alerts").textContent = "Enter your member code/card before offering items.";
     return;
   }
+  // Optional: Check if description is entered
+  /*
+  let desc = document.getElementById("item-desc-" + cat).value;
+  if(!desc) {
+     document.getElementById("alerts").textContent = "Please describe the item first.";
+     return;
+  }
+  */
+  pendingCategory = cat;
+  document.getElementById('qr-modal').style.display = 'flex';
+}
+
+function closeQR() {
+  document.getElementById('qr-modal').style.display = 'none';
+}
+
+function completeDropOff() {
+  if(!pendingCategory) return;
+  const cat = pendingCategory;
+  
   let desc = document.getElementById("item-desc-" + cat).value || "(No description)";
   let imgSrc = document.getElementById("img-preview-" + cat).src;
   let imgExists = imgSrc && imgSrc.startsWith("data:image/");
@@ -694,6 +797,8 @@ function dropOff(cat) {
   document.getElementById("item-desc-" + cat).value = "";
   document.getElementById("img-preview-" + cat).src = "";
   document.getElementById("img-preview-" + cat).style.display = "none";
+  
+  closeQR();
 }
 
 // Basic celebration function
