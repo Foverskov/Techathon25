@@ -4,28 +4,460 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sydhavn Community Exchange Hub</title>
-  <link rel="stylesheet" href="main.css">
+  <style>
+    :root {
+      --primary: #207567;
+      --primary-light: #E3F7EF;
+      --secondary: #29596D;
+      --accent: #F46A60;
+      --bg: #f8faf9;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --text-light: #6b7280;
+      --radius: 16px;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    /* Header */
+    header {
+      padding: 20px;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #eee;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .station-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.025em;
+    }
+
+    .weather, #clock {
+      font-size: 0.875rem;
+      color: var(--text-light);
+    }
+
+    /* Buttons */
+    button {
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+
+    header button {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    header button:hover {
+      transform: translateY(-1px);
+      filter: brightness(0.95);
+    }
+
+    .emergency-btn {
+      background: var(--accent) !important;
+      color: white !important;
+    }
+
+    /* Auth Section */
+    .auth-section {
+      padding: 20px;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .auth-section label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--secondary);
+    }
+
+    .auth-section input {
+      padding: 8px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .auth-section input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .auth-section button {
+      background: var(--secondary);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+    }
+
+    #user-points {
+      margin-left: auto;
+      font-weight: 700;
+      color: var(--primary);
+      background: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    /* Nav */
+    nav {
+      display: flex;
+      overflow-x: auto;
+      padding: 10px 20px;
+      gap: 10px;
+      border-bottom: 1px solid #eee;
+      scrollbar-width: none; /* Hide scrollbar */
+    }
+    nav::-webkit-scrollbar { display: none; }
+
+    .tab {
+      white-space: nowrap;
+      padding: 10px 16px;
+      color: var(--text-light);
+      background: transparent;
+      border-radius: 12px;
+      font-size: 0.95rem;
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(32, 117, 103, 0.3);
+    }
+
+    /* Main Content */
+    .tab-content {
+      padding: 30px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tab-content h2 {
+      font-size: 1.5rem;
+      color: var(--secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .tab-content p {
+      color: var(--text-light);
+      margin-bottom: 1.5rem;
+    }
+
+    .bin-status {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    /* Upload & Inputs */
+    input[type="file"] {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background: #f9fafb;
+      border: 2px dashed #e5e7eb;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .tab-content input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      font-size: 1rem;
+    }
+
+    .tab-content button {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: white;
+      border-radius: 12px;
+      font-size: 1rem;
+      margin-top: 10px;
+      box-shadow: 0 4px 6px -1px rgba(32, 117, 103, 0.3);
+    }
+
+    .tab-content button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(32, 117, 103, 0.4);
+    }
+
+    /* Listings Header */
+    .listings-divider {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .listings-divider h3 {
+      margin: 0;
+      color: var(--secondary);
+      font-size: 1.1rem;
+    }
+
+    /* Listings */
+    .current-listings {
+      list-style: none;
+      padding: 0;
+      margin-top: 15px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .current-listings li {
+      background: #f9fafb;
+      padding: 15px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #f3f4f6;
+    }
+
+    .current-listings li.reserved {
+      opacity: 0.6;
+      background: #fef2f2;
+    }
+
+    .current-listings button {
+      width: auto;
+      margin: 0;
+      padding: 6px 12px;
+      font-size: 0.875rem;
+      background: var(--secondary);
+    }
+
+    .img-preview {
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-light);
+      font-size: 0.875rem;
+      border-top: 1px solid #eee;
+    }
+
+    /* High Contrast */
+    body.high-contrast {
+      --bg: #000;
+      --card-bg: #000;
+      --text: #fff;
+      --text-light: #ddd;
+      --primary: #ffff00;
+      --primary-light: #333;
+      --secondary: #00ffff;
+    }
+
+    body.high-contrast .container {
+      border: 2px solid white;
+    }
+
+    body.high-contrast button {
+      border: 2px solid currentColor;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 24px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      position: relative;
+    }
+
+    .close {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-light);
+    }
+
+    /* Menu & Header Extras */
+    .header-info {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      margin-top: 4px;
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      position: relative;
+      margin-left: auto;
+    }
+
+    .menu-btn {
+      font-size: 1.5rem;
+      background: transparent !important;
+      color: var(--primary) !important;
+      padding: 4px 8px !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-dropdown {
+      position: absolute;
+      top: 120%;
+      right: 0;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 100;
+      min-width: 160px;
+      border: 1px solid #eee;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .menu-dropdown button {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .menu-dropdown button:hover {
+      background: #f3f4f6;
+    }
+    
+    .menu-dropdown .emergency-btn {
+       background: var(--accent) !important;
+       color: white !important;
+       text-align: center;
+    }
+
+    #login-btn {
+      background: var(--secondary);
+      color: white;
+    }
+  </style>
 </head>
 <body>
 <div class="container">
   <header>
     <div class="header-left">
       <span class="station-title">Sydhavn Community Exchange Hub</span>
-      <span id="clock"></span>
-      <span class="weather">☀️ 6°C</span>
+      <div class="header-info">
+        <span id="clock"></span> 
+        <span class="weather">☀️ 6°C</span>
+      </div>
     </div>
-    <button class="help-btn" onclick="showHelp()">Help</button>
-    <button class="emergency-btn" onclick="triggerEmergency()">Emergency</button>
-    <button id="lang-toggle" onclick="toggleLanguage()">DA/EN</button>
-    <button onclick="toggleContrast()" id="contrast-toggle">Contrast</button>
+    <div class="header-right">
+      <div id="auth-display">
+        <button id="login-btn" onclick="showLogin()">Login</button>
+        <div id="user-points" style="display:none">Points: <span id="points-val">0</span></div>
+      </div>
+      <button class="menu-btn" onclick="toggleMenu()" aria-label="Menu">☰</button>
+      
+      <div id="main-menu" class="menu-dropdown" style="display:none">
+        <button onclick="showHelp()">Help</button>
+        <button id="lang-toggle" onclick="toggleLanguage()">DA/EN</button>
+        <button onclick="toggleContrast()" id="contrast-toggle">Contrast</button>
+        <button class="emergency-btn" onclick="triggerEmergency()">Emergency</button>
+      </div>
+    </div>
   </header>
-  <section class="auth-section">
-    <label for="access">Member Code / Card:</label>
-    <input id="access" type="password" maxlength="6" placeholder="Enter code" aria-label="Member code">
-    <button onclick="checkAccess()">Enter</button>
-    <span id="access-msg"></span>
-    <div id="user-points">Points: <span id="points-val">0</span></div>
-  </section>
+  
+  <!-- Login Modal -->
+  <div id="login-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeLogin()">&times;</span>
+      <h3>Member Login</h3>
+      <p style="margin-bottom: 15px; color: var(--text-light);">Enter your 6-digit member code to access points and reservations.</p>
+      <label for="access-modal" style="font-weight:500; color:var(--secondary);">Member Code / Card:</label>
+      <input id="access-modal" type="password" maxlength="6" placeholder="Enter code" aria-label="Member code" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; margin: 10px 0; box-sizing: border-box;">
+      <button onclick="checkAccess()" style="width:100%; padding:12px; background:var(--primary); color:white; border-radius:8px;">Enter</button>
+      <span id="access-msg" style="display:block; margin-top:10px; font-weight:bold;"></span>
+    </div>
+  </div>
+
   <nav>
     <button class="tab active" onclick="showTab('clothing')">Clothing</button>
     <button class="tab" onclick="showTab('home')">Home & Kitchen</button>
@@ -43,7 +475,10 @@
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-clothing')" aria-label="Upload photo">
       <img id="img-preview-clothing" class="img-preview" style="display:none;">
       <input type="text" id="item-desc-clothing" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
-      <button onclick="dropOff('clothing')">Offer Item</button>
+      <button onclick="dropOff('clothing')">Hand-in</button>
+      <div class="listings-divider">
+        <h3>Available Items</h3>
+      </div>
       <ul id="listings-clothing" class="current-listings"></ul>
     </div>
     <div class="tab-content" id="home" style="display:none">
@@ -53,7 +488,10 @@
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-home')" aria-label="Upload photo">
       <img id="img-preview-home" class="img-preview" style="display:none;">
       <input type="text" id="item-desc-home" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
-      <button onclick="dropOff('home')">Offer Item</button>
+      <button onclick="dropOff('home')">Hand-in item</button>
+      <div class="listings-divider">
+        <h3>Available Items</h3>
+      </div>
       <ul id="listings-home" class="current-listings"></ul>
     </div>
     <div class="tab-content" id="books" style="display:none">
@@ -63,7 +501,10 @@
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-books')" aria-label="Upload photo">
       <img id="img-preview-books" class="img-preview" style="display:none;">
       <input type="text" id="item-desc-books" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
-      <button onclick="dropOff('books')">Offer Item</button>
+      <button onclick="dropOff('books')">Hand-in item</button>
+      <div class="listings-divider">
+        <h3>Available Items</h3>
+      </div>
       <ul id="listings-books" class="current-listings"></ul>
     </div>
     <div class="tab-content" id="electronics" style="display:none">
@@ -73,7 +514,10 @@
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-electronics')" aria-label="Upload photo">
       <img id="img-preview-electronics" class="img-preview" style="display:none;">
       <input type="text" id="item-desc-electronics" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
-      <button onclick="dropOff('electronics')">Offer Item</button>
+      <button onclick="dropOff('electronics')">Hand-in item</button>
+      <div class="listings-divider">
+        <h3>Available Items</h3>
+      </div>
       <ul id="listings-electronics" class="current-listings"></ul>
     </div>
     <div class="tab-content" id="toys" style="display:none">
@@ -83,7 +527,10 @@
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-toys')" aria-label="Upload photo">
       <img id="img-preview-toys" class="img-preview" style="display:none;">
       <input type="text" id="item-desc-toys" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
-      <button onclick="dropOff('toys')">Offer Item</button>
+      <button onclick="dropOff('toys')">Hand-in item</button>
+      <div class="listings-divider">
+        <h3>Available Items</h3>
+      </div>
       <ul id="listings-toys" class="current-listings"></ul>
     </div>
     <div class="tab-content" id="sports" style="display:none">
@@ -93,7 +540,10 @@
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-sports')" aria-label="Upload photo">
       <img id="img-preview-sports" class="img-preview" style="display:none;">
       <input type="text" id="item-desc-sports" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
-      <button onclick="dropOff('sports')">Offer Item</button>
+      <button onclick="dropOff('sports')">Hand-in item</button>
+      <div class="listings-divider">
+        <h3>Available Items</h3>
+      </div>
       <ul id="listings-sports" class="current-listings"></ul>
     </div>
   </main>
@@ -122,6 +572,226 @@
   </div>
 </div>
 
-<script src="index.js" ></script>
+<script>
+// Feature #1: Photo upload/preview for each category
+function previewImage(event, id) {
+  const reader = new FileReader();
+  reader.onload = function(){
+    const img = document.getElementById(id);
+    img.src = reader.result;
+    img.style.display = "block";
+    if (document.body.classList.contains('high-contrast')) img.classList.add('high-contrast');
+    else img.classList.remove('high-contrast');
+  };
+  if(event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+}
+
+// Feature #2: Live listings (simulated data, per category)
+let listings = {
+  clothing: [{desc:'Red scarf', reserved:false}, {desc:'Kids boots EU32', reserved:false}],
+  home: [{desc:'Steel teapot', reserved:false}],
+  books: [{desc:'Crime novel (EN)', reserved:false}],
+  electronics: [{desc:'Bluetooth speaker', reserved:false}],
+  toys: [{desc:'Puzzle set', reserved:false}],
+  sports: []
+};
+
+function renderListings(cat) {
+  const ul = document.getElementById('listings-' + cat);
+  if(!ul) return;
+  ul.innerHTML = listings[cat].map((item, idx) =>
+    `<li class="${item.reserved ? 'reserved': ''}">
+      ${item.desc}
+      ${item.img ? `<br><img src="${item.img}" class="img-preview" style="max-width:40px;">` : ''}
+      ${!item.reserved ? `<button onclick="claimItem('${cat}',${idx})" aria-label="Claim item ${item.desc}">Claim</button>` : '(Reserved)'}
+    </li>`
+  ).join('');
+}
+
+// Feature #3: Reservation system
+function claimItem(cat, idx) {
+  if (!listings[cat][idx].reserved) {
+    listings[cat][idx].reserved = true;
+    addPoints(5);
+    scheduleNotification(`Your '${listings[cat][idx].desc}' reservation is confirmed!`);
+    renderListings(cat);
+  }
+}
+
+// Feature #5: Accessibility - contrast toggle
+function toggleContrast() {
+  document.body.classList.toggle('high-contrast');
+  document.querySelector('.container').classList.toggle('high-contrast');
+  document.querySelectorAll('.img-preview').forEach(img=>{
+    if(document.body.classList.contains('high-contrast')) img.classList.add('high-contrast');
+    else img.classList.remove('high-contrast');
+  });
+}
+
+// Feature #7: Points system
+let points = 0;
+function addPoints(amt) {
+  points += amt;
+  document.getElementById('points-val').textContent = points;
+}
+
+// Feature #9: Notification/reminder (simulated)
+function scheduleNotification(msg) {
+  document.getElementById('notification-message').textContent = msg;
+  document.getElementById('notification-modal').style.display = '';
+  setTimeout(closeNotification, 3200);
+}
+function closeNotification(){
+  document.getElementById('notification-modal').style.display = 'none';
+}
+
+// Bin status simulation (simulated for each)
+const binStatuses = [
+  "Pick-up slots available",
+  "Receiving lots of new items!",
+  "Popular category today",
+  "Ready for new treasures"
+];
+function updateBinStatuses() {
+  ["clothing","home","books","electronics","toys","sports"].forEach(cat => {
+    const statusEl = document.getElementById("status-" + cat);
+    if(statusEl) statusEl.textContent = binStatuses[Math.floor(Math.random()*binStatuses.length)];
+  });
+}
+
+// Clock
+function updateClock() {
+  const now = new Date();
+  let h = now.getHours(), m = now.getMinutes();
+  document.getElementById("clock").textContent = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+}
+
+// Tabs
+function showTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = "none");
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  document.getElementById(tabId).style.display = "";
+  const idx = ["clothing","home","books","electronics","toys","sports"].indexOf(tabId);
+  if(idx >= 0) document.querySelectorAll('.tab')[idx].classList.add('active');
+  document.getElementById("alerts").textContent = "";
+}
+
+// Drop-off with photo and text storage
+function dropOff(cat) {
+  if (!accessGranted) {
+    document.getElementById("alerts").textContent = "Enter your member code/card before offering items.";
+    return;
+  }
+  let desc = document.getElementById("item-desc-" + cat).value || "(No description)";
+  let imgSrc = document.getElementById("img-preview-" + cat).src;
+  let imgExists = imgSrc && imgSrc.startsWith("data:image/");
+  listings[cat].push({desc:desc, img:imgExists ? imgSrc : null, reserved:false});
+  renderListings(cat);
+  addPoints(10);
+  showCelebration(`${desc} shared! +10 community points!`);
+  scheduleNotification(`Thank you for your offer: '${desc}'. Someone may claim it soon!`);
+  // Clear fields:
+  document.getElementById("item-desc-" + cat).value = "";
+  document.getElementById("img-preview-" + cat).src = "";
+  document.getElementById("img-preview-" + cat).style.display = "none";
+}
+
+// Basic celebration function
+function showCelebration(msg) {
+  const alerts = document.getElementById("alerts");
+  alerts.innerHTML = `<span style="color:#25bc88;">🎉 ${msg}</span>`;
+  setTimeout(() => { alerts.innerHTML = ""; }, 2300);
+}
+
+// Languages
+let isDanish = false;
+function setBinLanguage() {
+  document.querySelectorAll('.tab-content').forEach(el => {
+    let p = el.querySelector('p');
+    if (p) {
+      p.textContent = p.getAttribute(isDanish ? 'data-da' : 'data-en');
+    }
+  });
+}
+function toggleLanguage() {
+  isDanish = !isDanish;
+  setBinLanguage();
+}
+
+// Access
+let accessGranted = false;
+function checkAccess() {
+  const code = document.getElementById("access-modal").value;
+  let msg = document.getElementById("access-msg");
+  if (code === "123456") {
+    accessGranted = true;
+    msg.textContent = "Success!";
+    msg.style.color = "#207567";
+    setTimeout(() => {
+        closeLogin();
+        document.getElementById("login-btn").style.display = "none";
+        document.getElementById("user-points").style.display = "block";
+        showCelebration("Welcome back! You have " + points + " points.");
+    }, 800);
+  } else {
+    msg.textContent = "Invalid code/card!";
+    accessGranted = false;
+    msg.style.color = "#F46A60";
+  }
+}
+
+// Menu & Modals
+function toggleMenu() {
+    const menu = document.getElementById("main-menu");
+    menu.style.display = (menu.style.display === "none") ? "flex" : "none";
+}
+
+function showLogin() {
+    document.getElementById("login-modal").style.display = "flex";
+    document.getElementById("access-modal").focus();
+}
+
+function closeLogin() {
+    document.getElementById("login-modal").style.display = "none";
+    document.getElementById("access-msg").textContent = "";
+    document.getElementById("access-modal").value = "";
+}
+
+// Close menu when clicking outside
+window.onclick = function(event) {
+    if (!event.target.matches('.menu-btn') && !event.target.matches('.menu-btn *')) {
+        const menu = document.getElementById("main-menu");
+        if (menu && menu.style.display === "flex") {
+            menu.style.display = "none";
+        }
+    }
+    // Close modals if clicking outside content
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = "none";
+    }
+}
+
+// Help & Emergency
+function showHelp() {
+  document.getElementById("instructions-modal").style.display = "";
+}
+function closeModal() {
+  document.getElementById("instructions-modal").style.display = "none";
+}
+function triggerEmergency() {
+  alert("Emergency! Staff notified. Please remain calm.");
+}
+
+// Setup
+window.onload = function () {
+  setBinLanguage();
+  updateBinStatuses();
+  updateClock();
+  ["clothing","home","books","electronics","toys","sports"].forEach(renderListings);
+  showTab('clothing');
+  setInterval(updateBinStatuses, 5100);
+  setInterval(updateClock, 1000);
+};
+</script>
 </body>
 </html>
