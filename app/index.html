@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sydhavn Community Exchange Hub</title>
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-left">
+      <span class="station-title">Sydhavn Community Exchange Hub</span>
+      <span id="clock"></span>
+      <span class="weather">☀️ 6°C</span>
+    </div>
+    <button class="help-btn" onclick="showHelp()">Help</button>
+    <button class="emergency-btn" onclick="triggerEmergency()">Emergency</button>
+    <button id="lang-toggle" onclick="toggleLanguage()">DA/EN</button>
+    <button onclick="toggleContrast()" id="contrast-toggle">Contrast</button>
+  </header>
+  <section class="auth-section">
+    <label for="access">Member Code / Card:</label>
+    <input id="access" type="password" maxlength="6" placeholder="Enter code" aria-label="Member code">
+    <button onclick="checkAccess()">Enter</button>
+    <span id="access-msg"></span>
+    <div id="user-points">Points: <span id="points-val">0</span></div>
+  </section>
+  <nav>
+    <button class="tab active" onclick="showTab('clothing')">Clothing</button>
+    <button class="tab" onclick="showTab('home')">Home & Kitchen</button>
+    <button class="tab" onclick="showTab('books')">Books & Media</button>
+    <button class="tab" onclick="showTab('electronics')">Electronics</button>
+    <button class="tab" onclick="showTab('toys')">Toys & Kids</button>
+    <button class="tab" onclick="showTab('sports')">Sports & Leisure</button>
+  </nav>
+  <main>
+
+    <div class="tab-content" id="clothing">
+      <h2>Clothing & Accessories</h2>
+      <p data-en="Share wearable clothes, shoes, bags, hats and jewelry. Please donate only clean and usable items." data-da="Del tøj, sko, tasker, hatte og smykker. Donér kun rene og brugbare ting."></p>
+      <div class="bin-status" id="status-clothing"></div>
+      <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-clothing')" aria-label="Upload photo">
+      <img id="img-preview-clothing" class="img-preview" style="display:none;">
+      <input type="text" id="item-desc-clothing" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
+      <button onclick="dropOff('clothing')">Offer Item</button>
+      <ul id="listings-clothing" class="current-listings"></ul>
+    </div>
+    <div class="tab-content" id="home" style="display:none">
+      <h2>Home & Kitchen</h2>
+      <p data-en="Exchange kitchenware, lamps, small appliances, decorations. Donate only working and safe items." data-da="Byt køkkenudstyr, lamper, små apparater, pynt. Kun funktionsdygtige og sikre ting."></p>
+      <div class="bin-status" id="status-home"></div>
+      <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-home')" aria-label="Upload photo">
+      <img id="img-preview-home" class="img-preview" style="display:none;">
+      <input type="text" id="item-desc-home" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
+      <button onclick="dropOff('home')">Offer Item</button>
+      <ul id="listings-home" class="current-listings"></ul>
+    </div>
+    <div class="tab-content" id="books" style="display:none">
+      <h2>Books & Media</h2>
+      <p data-en="Give away books, magazines, CDs, DVDs, board games. Please avoid damaged items." data-da="Giv bøger, blade, CD'er, DVD'er, spil. Undgå beskadigede ting."></p>
+      <div class="bin-status" id="status-books"></div>
+      <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-books')" aria-label="Upload photo">
+      <img id="img-preview-books" class="img-preview" style="display:none;">
+      <input type="text" id="item-desc-books" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
+      <button onclick="dropOff('books')">Offer Item</button>
+      <ul id="listings-books" class="current-listings"></ul>
+    </div>
+    <div class="tab-content" id="electronics" style="display:none">
+      <h2>Electronics & Gadgets</h2>
+      <p data-en="Share phones, laptops, headphones, chargers, small working devices only. Remove personal data first." data-da="Del telefoner, laptops, høretelefoner, opladere. Slet altid persondata først."></p>
+      <div class="bin-status" id="status-electronics"></div>
+      <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-electronics')" aria-label="Upload photo">
+      <img id="img-preview-electronics" class="img-preview" style="display:none;">
+      <input type="text" id="item-desc-electronics" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
+      <button onclick="dropOff('electronics')">Offer Item</button>
+      <ul id="listings-electronics" class="current-listings"></ul>
+    </div>
+    <div class="tab-content" id="toys" style="display:none">
+      <h2>Toys & Kids' Items</h2>
+      <p data-en="Find or give toys, puzzles, children's books, games, clothes or strollers. No broken toys please." data-da="Find eller giv legetøj, gåder, børnebøger, spil, tøj, barnevogne. Intet ødelagt legetøj."></p>
+      <div class="bin-status" id="status-toys"></div>
+      <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-toys')" aria-label="Upload photo">
+      <img id="img-preview-toys" class="img-preview" style="display:none;">
+      <input type="text" id="item-desc-toys" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
+      <button onclick="dropOff('toys')">Offer Item</button>
+      <ul id="listings-toys" class="current-listings"></ul>
+    </div>
+    <div class="tab-content" id="sports" style="display:none">
+      <h2>Sports & Leisure</h2>
+      <p data-en="Swap or donate sports gear, bicycles, balls, yoga mats, outdoor and fitness goods in usable condition." data-da="Byt eller donér sportsudstyr, cykler, bolde, yogamåtter, udendørs og fitness ting. Kun brugbare produkter."></p>
+      <div class="bin-status" id="status-sports"></div>
+      <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-sports')" aria-label="Upload photo">
+      <img id="img-preview-sports" class="img-preview" style="display:none;">
+      <input type="text" id="item-desc-sports" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
+      <button onclick="dropOff('sports')">Offer Item</button>
+      <ul id="listings-sports" class="current-listings"></ul>
+    </div>
+  </main>
+  <section class="alerts" id="alerts"></section>
+  <footer>
+    <span>Empowering reuse · For Sydhavn · Accessible for all</span>
+  </footer>
+  <div id="notification-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeNotification()">&times;</span>
+      <h3>Reminder</h3>
+      <p id="notification-message"></p>
+    </div>
+  </div>
+  <div id="instructions-modal" class="modal" style="display:none">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h3>How to Use</h3>
+      <ol>
+        <li>Enter member code for points and tracking.</li>
+        <li>Upload a photo, describe your item, and offer it.</li>
+        <li>Claim items to reserve and get reminders!</li>
+        <li>Use high contrast or tab/keyboard navigation for accessibility.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<script src="index.js" ></script>
+</body>
+</html>
