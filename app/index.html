@@ -436,6 +436,54 @@
       background: var(--secondary);
       color: white;
     }
+
+    /* MitID Styling */
+    .mitid-modal .modal-content {
+      background: linear-gradient(135deg, #0051D5 0%, #003D99 100%);
+      color: white;
+    }
+    .mitid-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .mitid-logo {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .mitid-subtitle {
+      font-size: 0.875rem;
+      opacity: 0.9;
+    }
+    .mitid-modal input {
+      background: rgba(255,255,255,0.95);
+      border: 2px solid rgba(255,255,255,0.3);
+      color: #003D99;
+    }
+    .mitid-modal input:focus {
+      border-color: white;
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+    }
+    .mitid-modal label {
+      color: white !important;
+      font-weight: 500;
+    }
+    .mitid-modal button {
+      background: white !important;
+      color: #0051D5 !important;
+      font-weight: 700;
+    }
+    .mitid-modal button:hover {
+      background: #f0f0f0 !important;
+    }
+    .mitid-modal .close {
+      color: white;
+      opacity: 0.8;
+    }
+    .mitid-modal .close:hover {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -450,7 +498,7 @@
     </div>
     <div class="header-right">
       <div id="auth-display">
-        <button id="login-btn" onclick="showLogin()">Login</button>
+        <button id="login-btn" onclick="showLogin()">Login: MitId</button>
         <div id="user-points" style="display:none" onclick="showDiscounts()">Points: <span id="points-val">0</span></div>
       </div>
       <button class="menu-btn" onclick="toggleMenu()" aria-label="Menu">☰</button>
@@ -465,15 +513,16 @@
   </header>
   
   <!-- Login Modal -->
-  <div id="login-modal" class="modal" style="display:none;">
+  <div id="login-modal" class="modal mitid-modal" style="display:none;">
     <div class="modal-content">
       <span class="close" onclick="closeLogin()">&times;</span>
-      <h3>Member Login</h3>
-      <p style="margin-bottom: 15px; color: var(--text-light);">Enter your 6-digit member code to access points and reservations.</p>
-      <label for="access-modal" style="font-weight:500; color:var(--secondary);">Member Code / Card:</label>
-      <input id="access-modal" type="password" maxlength="6" placeholder="Enter code" aria-label="Member code" style="width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; margin: 10px 0; box-sizing: border-box;">
-      <button onclick="checkAccess()" style="width:100%; padding:12px; background:var(--primary); color:white; border-radius:8px;">Enter</button>
-      <span id="access-msg" style="display:block; margin-top:10px; font-weight:bold;"></span>
+      <div class="mitid-header">
+        <div class="mitid-logo">MitID</div>
+        <div class="mitid-subtitle">Log ind med dit MitID</div>
+      </div>
+      <!-- <input type="password" id="access-modal" placeholder="Indtast kode" style="width:100%; padding:12px; border-radius:8px; margin-bottom:15px; box-sizing:border-box; font-size:1rem;"> -->
+      <button onclick="checkAccess()" style="width:100%; padding:14px; border-radius:8px; font-size:1rem;">Log ind</button>
+      <span id="access-msg" style="display:block; margin-top:12px; font-weight:600; text-align:center;"></span>
     </div>
   </div>
 
@@ -491,8 +540,10 @@
       <h2>Clothing & Accessories</h2>
       <p data-en="Share wearable clothes, shoes, bags, hats and jewelry. Please donate only clean and usable items." data-da="Del tøj, sko, tasker, hatte og smykker. Donér kun rene og brugbare ting."></p>
       <div class="bin-status" id="status-clothing"></div>
+      <label style="display:block; margin-bottom:8px; font-weight:500; color:var(--secondary);">Add photo</label>
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-clothing')" aria-label="Upload photo">
       <img id="img-preview-clothing" class="img-preview" style="display:none;">
+      <label style="display:block; margin-bottom:8px; font-weight:500; color:var(--secondary);">Add description</label>
       <input type="text" id="item-desc-clothing" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
       <button onclick="showHandInQR('clothing')">Hand-in</button>
       <div class="listings-divider">
@@ -504,8 +555,10 @@
       <h2>Home & Kitchen</h2>
       <p data-en="Exchange kitchenware, lamps, small appliances, decorations. Donate only working and safe items." data-da="Byt køkkenudstyr, lamper, små apparater, pynt. Kun funktionsdygtige og sikre ting."></p>
       <div class="bin-status" id="status-home"></div>
+      <label style="display:block; margin-bottom:8px; font-weight:500; color:var(--secondary);">Add photo</label>
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-home')" aria-label="Upload photo">
       <img id="img-preview-home" class="img-preview" style="display:none;">
+      <label style="display:block; margin-bottom:8px; font-weight:500; color:var(--secondary);">Add description</label>
       <input type="text" id="item-desc-home" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
       <button onclick="showHandInQR('home')">Hand-in item</button>
       <div class="listings-divider">
@@ -517,8 +570,10 @@
       <h2>Books & Media</h2>
       <p data-en="Give away books, magazines, CDs, DVDs, board games. Please avoid damaged items." data-da="Giv bøger, blade, CD'er, DVD'er, spil. Undgå beskadigede ting."></p>
       <div class="bin-status" id="status-books"></div>
+      <label style="display:block; margin-bottom:8px; font-weight:500; color:var(--secondary);">Add photo</label>
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-books')" aria-label="Upload photo">
       <img id="img-preview-books" class="img-preview" style="display:none;">
+      <label style="display:block; margin-bottom:8px; font-weight:500; color:var(--secondary);">Add description</label>
       <input type="text" id="item-desc-books" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
       <button onclick="showHandInQR('books')">Hand-in item</button>
       <div class="listings-divider">
@@ -530,8 +585,10 @@
       <h2>Electronics & Gadgets</h2>
       <p data-en="Share phones, laptops, headphones, chargers, small working devices only. Remove personal data first." data-da="Del telefoner, laptops, høretelefoner, opladere. Slet altid persondata først."></p>
       <div class="bin-status" id="status-electronics"></div>
+      <label style="display:block; margin-bottom:8px; font-weight:500; color:var(--secondary);">Add photo</label>
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-electronics')" aria-label="Upload photo">
       <img id="img-preview-electronics" class="img-preview" style="display:none;">
+      <label style="display:block; margin-bottom:8px; font-weight:500; color:var(--secondary);">Add description</label>
       <input type="text" id="item-desc-electronics" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
       <button onclick="showHandInQR('electronics')">Hand-in item</button>
       <div class="listings-divider">
@@ -543,8 +600,10 @@
       <h2>Toys & Kids' Items</h2>
       <p data-en="Find or give toys, puzzles, children's books, games, clothes or strollers. No broken toys please." data-da="Find eller giv legetøj, gåder, børnebøger, spil, tøj, barnevogne. Intet ødelagt legetøj."></p>
       <div class="bin-status" id="status-toys"></div>
+      <label style="display:block; margin-bottom:8px; font-weight:500; color:var(--secondary);">Add photo</label>
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-toys')" aria-label="Upload photo">
       <img id="img-preview-toys" class="img-preview" style="display:none;">
+      <label style="display:block; margin-bottom:8px; font-weight:500; color:var(--secondary);">Add description</label>
       <input type="text" id="item-desc-toys" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
       <button onclick="showHandInQR('toys')">Hand-in item</button>
       <div class="listings-divider">
@@ -556,8 +615,10 @@
       <h2>Sports & Leisure</h2>
       <p data-en="Swap or donate sports gear, bicycles, balls, yoga mats, outdoor and fitness goods in usable condition." data-da="Byt eller donér sportsudstyr, cykler, bolde, yogamåtter, udendørs og fitness ting. Kun brugbare produkter."></p>
       <div class="bin-status" id="status-sports"></div>
+      <label style="display:block; margin-bottom:8px; font-weight:500; color:var(--secondary);">Add photo</label>
       <input type="file" accept="image/*" title="Upload item photo" onchange="previewImage(event, 'img-preview-sports')" aria-label="Upload photo">
       <img id="img-preview-sports" class="img-preview" style="display:none;">
+      <label style="display:block; margin-bottom:8px; font-weight:500; color:var(--secondary);">Add description</label>
       <input type="text" id="item-desc-sports" maxlength="32" placeholder="Describe item..." aria-label="Describe item">
       <button onclick="showHandInQR('sports')">Hand-in item</button>
       <div class="listings-divider">
@@ -826,23 +887,15 @@ function toggleLanguage() {
 // Access
 let accessGranted = false;
 function checkAccess() {
-  const code = document.getElementById("access-modal").value;
-  let msg = document.getElementById("access-msg");
-  if (code === "123456") {
+    // const code = document.getElementById("access-modal").value;
+    let msg = document.getElementById("access-msg");
     accessGranted = true;
     msg.textContent = "Success!";
     msg.style.color = "#207567";
-    setTimeout(() => {
-        closeLogin();
-        document.getElementById("login-btn").style.display = "none";
-        document.getElementById("user-points").style.display = "block";
-        showCelebration("Welcome back! You have " + points + " points.");
-    }, 800);
-  } else {
-    msg.textContent = "Invalid code/card!";
-    accessGranted = false;
-    msg.style.color = "#F46A60";
-  }
+    closeLogin();
+    document.getElementById("login-btn").style.display = "none";
+    document.getElementById("user-points").style.display = "block";
+    showCelebration("Welcome back! You have " + points + " points.");
 }
 
 // Menu & Modals
@@ -853,13 +906,11 @@ function toggleMenu() {
 
 function showLogin() {
     document.getElementById("login-modal").style.display = "flex";
-    document.getElementById("access-modal").focus();
 }
 
 function closeLogin() {
     document.getElementById("login-modal").style.display = "none";
     document.getElementById("access-msg").textContent = "";
-    document.getElementById("access-modal").value = "";
 }
 
 // Close menu when clicking outside
